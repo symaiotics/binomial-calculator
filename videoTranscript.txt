@@ -1,0 +1,139 @@
+Hey, everyone. Today, we're gonna be talking about an interesting topic on trust.
+
+So when we talk about large language models, many of us know that when you're interacting with them and you ask them a question, they give you an answer, quite often, their answers aren't totally truth full.
+
+They'll go and make up little details or they will have something called a hallucination, where they will say something that seems very confident, and then when you ask them, or you point out that they're incorrect, they'll say, oh, I'm sorry about that.
+
+Yes. I'm incorrect. And then they'll attempt to go answer that question again.
+
+They typically don't self analyze to see if their response is of quality or they're not able if they are doing that behind the scenes, they are not able to detect that the answer that they're giving you is faulty.
+
+So one of the methods that we can apply is we can try a scenario where we actually ask the AI large language model multiple times concurrently and explore whether in doing so, we end up with a higher degree of trust versus asking it one time.
+
+And if that's the case, which is my theory, then we would want to know how many times we would need to ask the large language model to overcome these hallucinations and to radically increase the amount of trust that we have in the system.
+
+And to do that, we're gonna talk to chatgpt4 o, and we're gonna run through a scenario.
+
+So let's do that, and we'll see what we come up with as a solution, And we'll see the kind of insights that we can apply to build and increase our trust in the responses from a large language model.
+
+So let's dive in. I'm making a video about AI trust, and I want to use a hypothetical scenario to develop a method for trusting AIs, which may be fundamentally untrustworthy due to hallucination.
+
+I want you to imagine that I have a room. On the wall in the room, there's a number 1 or a number 0. And the only way for me to know which number it is is for me to send in a person to go in and check it for me.
+
+However, I have a problem. I fundamentally can't trust these people a 100%. I can only trust them, for example, 50%, 60%, 70%. So for argument's sake, let's say I trust them 60% of the time to be truthful.
+
+I'm trying to figure out whether by sending more people into the room to come and evaluate that, that I can have a higher degree of trust and what method I would use to figure that out. Interesting scenario.
+
+You're essentially describing a situation where you need to aggregate potentially unreliable information to arrive at a more reliable conclusion. One common method to address this is to use a consensus or majority voting system.
+
+Here's a simple way to approach it. One, send multiple people into the room. The more people you send, the better your chances of compensating for individual errors.
+
+2, record each person's report. Note whether each person says the number is 1 or 0. 3, use a majority vote. If the majority of people say the number is 1, then you can reasonably trust that the number is 1, and the same goes for 0.
+
+The key is to determine the probability that the majority vote is correct, given that each individual has a 60% chance of being truthful.
+
+Mathematically, this can be approached using concepts from probability theory and statistics. Would you like me to help you calculate the probability of the majority vote being correct for a specific number of people?
+
+I'd like to understand what formula I would use for that and, if you could write down the formula for me so I could understand it.
+
+Sure. To calculate the probability that the majority vote is correct, given that each individual has a probability p of being truthful, you can use the binomial distribution.
+
+Let's denote minus n as the total number of people you send into the room, minus p as the probability that each person is truthful, in this case, 0.
+
+6. The probability p that the majority vote is correct is calculated by summing the probabilities of getting more than half of the votes correct.
+
+For an odd number of people, n, the majority threshold is frac n 2, rounded up to the next whole number.
+
+Yes. Can you use that calculation? Don't write it down. Just use it in your own head to figure it out. I want to know with the trust factor of 60%, what my probability of success would be if I send 10 people into the room.
+
+If you send 10 people into the room and each has a 60% chance of being truthful, the probability that the majority vote will be correct is approximately 83.
+
+38%. This significantly increases your trust in the outcome compared to trusting a single person's report. And can you redo the calculation if I send or if my my chance of being truthful is 80%.
+
+If each person has an 80% chance of being truthful, the probability that the majority vote will be correct when you send 10 people into the room is approximately 99.
+
+36%. This gives you a very high level of confidence in the outcome. Wonderful.
+
+Thank you. Now I want to create a software application using JavaScript and Vue to help me calculate this, and I'd like to use a, 2 sliders. One slider, which would be the the trust factor, between point 11. So the slider would go in 0.
+
+1 increments, and the second slider would be the number of people between 1 person and 20 people, let's say, that, in in this scenario. And I like to use Vue to, dynamically, reactively calculate that and put that on the screen.
+
+Can you write that code for me, please? Sure. Here is a simple Vue dotjs application with 2 sliders to dynamically calculate and display the probability based on the trust factor and the number of people.
+
+You can see the code in our conversation history. So here's the interface. We have the binomial confidence calculator, and we can put in the number of people.
+
+In this case, I have 10. And the probability that those people are giving a correct response, which in this case was 0. 6, and that calculates to 83. 38%. And here we can increase the number of people.
+
+So let's say we made it 15 people. We would see that the confidence would change. Make that 16 people. So it seems to vary. And then if I make it point 7 confidence, then suddenly the confidence level goes up to 97%.
+
+And if I make that point 8, then the confidence level goes up to 99. 85% and so forth. So as the confidence of the as the number of people increases, if the confidence is above a certain threshold, then the confidence stays quite high.
+
+But if the confidence falls down, let's say I make it a 0. 4, it actually compounds worse. So the error compounds upon itself. So 9 people, if I only trust them 0.
+
+4% of the time, then the confidence level that they're telling the truth, majority vote is only 26%. And then even if I increase the number of people up to 20%, or however high that I want, it actually degrades.
+
+Right? So it has the inverse effect that we want. So if I were to put in here though, like, 0. 51, well, then, 35 people will get us to 54. But if I go 0. 55, then it gets us to 72.
+
+And if I go 0. 59, then it gets us to 86. So so you see it kind of rising up there quite quickly. So we wanna find the sweet spot now between the minimum number of people and the highest amount of probability of correct response.
+
+So that might be point 8 and maybe we want 10 people there, which gives us 99. 36%. That's pretty high, pretty high confidence, just like it said in in the calculation.
+
+So I had GPT 4 o take this a little bit further and turn the binomial calculator into a heat map. And so here we have the sliders for the number of people as well as the probability that they're telling the truth.
+
+And what we see here is a really interesting visual. So as noted, if we have less than a 0. 5 trust, you actually degrade the amount of confidence that you have, below the the the the the point five level.
+
+So if you're at 0. 5, you can sort of be 0. 5 or or slightly above. If you're at 0. 6, you can start to get higher, although you can never get to a 100% even if you have 20 people.
+
+And in fact, it is not until you get to 0. 8 that you're able to have the confidence, a 100% confidence, but that requires 12 people in this scenario.
+
+So that's really the first time you can hit a 100% confidence, with a with an 80% trust with 12 people. And then the higher trust that you go, of course, if you have a 100% confidence in the people, a 100% trust, then it's always 1.
+
+But if point 9, you know, you you have close to that, and then point 8 is really where it starts to kick in.
+
+So if you're getting a response back from your large language model that is 80% or less, this method will increase the level of confidence you have, but it would be hard harder to get to 100 a 100%.
+
+And if your level of, probability of of trust is 60%, then you'll you'll actually never really achieve it with this many people. Maybe if I had more people, we would we would get to that response.
+
+So this is a really interesting view, and it responds to the thesis that we had moving into here, which was that by having, an environment with limited trust, we can increase the amount of trust by increasing the number of iterations that we're interacting with the large language model.
+
+So in previous testing, when I found that I wanted to get the trust level up to close to a 100% or a 100%, I absolutely had to ask the large language model multiple times the same question, And then I took the results back, so I'd I'd get 10 answers back.
+
+And then I had a second level, second set of prompts that would combine that information and it would actually integrate the best answer from all of them.
+
+Best being the most detailed, the most accurate, the most bug free. And so by using multiple different agents or assistance simultaneously, I could significantly increase the trust factor up close to a 100% by using that method.
+
+Now we have to differentiate hallucination and making a mistake, which is an inherent flaw in large language models and and does impact it somewhere in the ballpark of 80 plus, sorry, 20 plus percent of the time.
+
+So 20 plus percent of the time, you would expect that it would be in some way incorrect or, flawed in its answer.
+
+You have to differentiate that, but the the sort of occasional flaw versus the systemic flaw, meaning that there is an actual, inaccuracy in the training data that was used to make the large language model.
+
+And so you could tackle that another way. The way I would tackle that would be to have human sampling, and there you could use statistical sampling to say, let's say you generated a 1,000 responses.
+
+Then you wanted to know that 95% of the time, plus or minus 3%, for example, that the response was correct.
+
+Now we're, you know, again, getting away from hallucinations, now we're going into accuracy, then you can actually work that back and figure out how many, exact responses you would need or how many responses a human would have to check for you to hit a 95% confidence that the results were good.
+
+And then that's how you can bring cumin into the mix, but you can instead of checking, you know, a 1,000 responses, you can check just a subset of those.
+
+And statistically speaking, the the the sampling method will give you the confidence that you're looking for, that the that the information is not fundamentally flawed.
+
+We see companies out there who are advertising that in the next year or so. They're gonna get their large language models to a 6 sigma, so 99. 996 percent trust. I suspect that the way that they're doing this is through 2 methods.
+
+They're they're applying this iterative approach where they're gonna be asking the same prompt maybe across 20 or 30 or, you know, probably not significantly more than that, 20 or 30 different iterations simultaneously and then synthesizing that response back together.
+
+And then the other method that they will be applying is they're gonna use an ensemble approach.
+
+And so what that means is they're gonna actually have multiple different models that were trained on different data, and they're gonna have them evaluate the same question.
+
+And then the purpose of that is to find out if the answer is if if a consensus is reached across those answers.
+
+So if 5 differently trained models who are fundamentally similar that they're large language models, but developed on a different training set end up with the same conclusion, that gives you a higher confidence that you are providing a correct answer versus one model simply attempting to incorrectly answer again and again.
+
+So the ensemble method with multi agent or multi assistant prompting and then with a statistical human checking, so again, getting that confidence level plus or minus, That's how you're gonna be able to develop and and test solutions and have this high degree of human confidence.
+
+So I hope this was an interesting way to explore developing and growing AI trust. And if you're interested, I'll leave the link to a GitHub repository that has the binomial calculator, for you to play around with.
+
+So you can try it out, see if you can come up with any better means of calculating trust, and maybe you can apply some of those statistical indicators that I was talking about to figure out the number of samples a human would have to check.
+
+That would be a great next step. And if we could share that, we would probably have the basis to develop an AI trust framework and to begin to test that with with humans in the loop.
