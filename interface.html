@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binomial Confidence Calculator</title>
+    <script src="https://unpkg.com/vue@3.2.31"></script>
+</head>
+<body>
+    <div id="app">
+        <h1>Binomial Confidence Calculator</h1>
+        <form @submit.prevent="calculateConfidence">
+            <label for="numPeople">Number of People:</label>
+            <input type="number" v-model.number="numPeople" min="1" required>
+            <br><br>
+            <label for="probability">Probability of Correct Response (0-1):</label>
+            <input type="number" v-model.number="probability" step="0.01" min="0" max="1" required>
+            <br><br>
+            <button type="submit">Calculate Confidence</button>
+        </form>
+        <h2 v-if="displayConfidence !== null">Confidence Level: {{ displayConfidence }}%</h2>
+    </div>
+
+    <script>
+        const { createApp, ref, computed } = Vue;
+
+        createApp({
+            setup() {
+                const numPeople = ref(0);
+                const probability = ref(0.0);
+                const confidence = ref(null);
+
+                const binomialCoefficient = (n, k) => {
+                    let coeff = 1;
+                    for (let i = n - k + 1; i <= n; i++) coeff *= i;
+                    for (let i = 1; i <= k; i++) coeff /= i;
+                    return coeff;
+                };
+
+                const binomialProbability = (n, k, p) => {
+                    return binomialCoefficient(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
+                };
+
+                const calculateConfidence = () => {
+                    if (numPeople.value < 1 || probability.value <= 0 || probability.value >= 1) {
+                        confidence.value = null;
+                        return;
+                    }
+
+                    const majority = Math.ceil(numPeople.value / 2);
+                    let conf = 0;
+
+                    for (let k = majority; k <= numPeople.value; k++) {
+                        conf += binomialProbability(numPeople.value, k, probability.value);
+                    }
+
+                    confidence.value = conf * 100;
+                };
+
+                // Using computed property to automatically recalculate confidence when inputs change
+                const displayConfidence = computed(() => {
+                    return confidence.value !== null ? confidence.value.toFixed(2) : null;
+                });
+
+                return {
+                    numPeople,
+                    probability,
+                    displayConfidence,
+                    calculateConfidence
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

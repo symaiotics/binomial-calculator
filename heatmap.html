@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binomial Confidence Heatmap</title>
+    <script src="https://unpkg.com/vue@3.2.31"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .highlighted {
+            outline: 3px solid yellow !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div id="app" class="container mx-auto p-8">
+        <h1 class="text-2xl font-bold mb-6">Binomial Confidence Heatmap</h1>
+        <div class="flex items-center mb-4">
+            <label for="numPeople" class="w-32">Number of People:</label>
+            <input type="range" id="numPeople" v-model.number="selectedPeople" min="1" max="20" step="1" class="mr-2">
+            <span class="font-mono">{{ selectedPeople }}</span>
+        </div>
+        <div class="flex items-center mb-4">
+            <label for="probability" class="w-32">Probability:</label>
+            <input type="range" id="probability" v-model.number="selectedProbability" min="0.1" max="1" step="0.1" class="mr-2">
+            <span class="font-mono">{{ formattedProbability }}</span>
+        </div>
+        <div class="font-mono mb-4">Calculated Confidence: {{ calculatedConfidence }}</div>
+        <div class="overflow-auto bg-white p-3 rounded shadow">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                    <tr>
+                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">People \ Probability</th>
+                        <th v-for="prob in probabilityRange" :key="prob" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            {{ prob.toFixed(1) }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr v-for="(row, rowIndex) in heatmap" :key="rowIndex">
+                        <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">{{ 20 - rowIndex }}</td>
+                        <td v-for="(cell, cellIndex) in row" :key="cellIndex"
+                            :class="[getHeatmapColorClass(cell), { 'highlighted': isHighlighted(rowIndex, cellIndex) }]"
+                            class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900"
+                            :title="cell !== Infinity ? cell.toFixed(2) : '1'">
+                            {{ cell !== Infinity ? cell.toFixed(2) : '1' }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, computed } = Vue;
+
+        createApp({
+            setup() {
+                const selectedPeople = ref(10);
+                const selectedProbability = ref(0.6);
+                const probabilityRange = ref([]);
+                const heatmap = ref([]);
+
+                const formattedProbability = computed(() => Number(selectedProbability.value).toFixed(1));
+
+                const binomialCoefficient = (n, k) => {
+                    let coeff = 1;
+                    for (let i = n - k + 1; i <= n; i++) coeff *= i;
+                    for (let i = 1; i <= k; i++) coeff /= i;
+                    return coeff;
+                };
+
+                const binomialProbability = (n, k, p) => {
+                    return binomialCoefficient(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
+                };
+
+                const calculateConfidence = (numPeople, probability) => {
+                    const majority = Math.ceil(numPeople / 2);
+                    let conf = 0;
+
+                    for (let k = majority; k <= numPeople; k++) {
+                        conf += binomialProbability(numPeople, k, probability);
+                    }
+
+                    return conf;
+                };
+
+                const getHeatmapColorClass = (value) => {
+                    if (value >= 0.8) return 'bg-green-200';
+                    if (value >= 0.6) return 'bg-green-300';
+                    if (value >= 0.4) return 'bg-yellow-200';
+                    if (value >= 0.2) return 'bg-yellow-300';
+                    return 'bg-red-200';
+                };
+
+                const isHighlighted = (rowIndex, cellIndex) => {
+                    const peopleIndex = 20 - selectedPeople.value;
+                    const probabilityIndex = Math.round((selectedProbability.value - 0.1) / 0.1);
+                    return rowIndex === peopleIndex && cellIndex === probabilityIndex;
+                };
+
+                const calculatedConfidence = computed(() => {
+                    const conf = calculateConfidence(selectedPeople.value, selectedProbability.value);
+                    return conf.toFixed(2);
+                });
+
+                for (let prob = 0.1; prob <= 1; prob += 0.1) {
+                    probabilityRange.value.push(prob);
+                }
+                for (let people = 20; people >= 1; people--) {
+                    const row = [];
+                    for (let prob of probabilityRange.value) {
+                        const confidence = calculateConfidence(people, prob);
+                        row.push(confidence);
+                    }
+                    heatmap.value.push(row);
+                }
+
+                return {
+                    selectedPeople,
+                    selectedProbability,
+                    formattedProbability,
+                    calculatedConfidence,
+                    probabilityRange,
+                    heatmap,
+                    getHeatmapColorClass,
+                    isHighlighted
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
